@@ -14,12 +14,12 @@ public class TrajectoryPlanner : MonoBehaviour
     const float k_JointAssignmentWait = 0.1f;
     const float k_PoseAssignmentWait = 0.5f;
     string[] LinkNames = {
-        "world/robot_base_link/robot_base_link_inertia/robot_shoulder_link",
-        "/robot_upper_arm_link",
-        "/robot_forearm_link",
-        "/robot_wrist_1_link",
-        "/robot_wrist_2_link",
-        "/robot_wrist_3_link"
+        "arm_base_link/arm_base_link_inertia/arm_shoulder_link",
+        "/arm_upper_arm_link",
+        "/arm_forearm_link",
+        "/arm_wrist_1_link",
+        "/arm_wrist_2_link",
+        "/arm_wrist_3_link"
     };
 
     // Variables required for ROS communication
@@ -91,8 +91,8 @@ public class TrajectoryPlanner : MonoBehaviour
         var leftOuterDrive = m_LeftOuterGripper.xDrive;
         var rightOuterDrive = m_RightOuterGripper.xDrive;
 
-        leftOuterDrive.target = Mathf.Clamp(-30.0f, leftOuterDrive.lowerLimit, leftOuterDrive.upperLimit);
-        rightOuterDrive.target = Mathf.Clamp(-30.0f, rightOuterDrive.lowerLimit, rightOuterDrive.upperLimit);
+        leftOuterDrive.target = Mathf.Clamp(-50.0f, leftOuterDrive.lowerLimit, leftOuterDrive.upperLimit);
+        rightOuterDrive.target = Mathf.Clamp(-50.0f, rightOuterDrive.lowerLimit, rightOuterDrive.upperLimit);
 
         m_LeftOuterGripper.xDrive = leftOuterDrive;
         m_RightOuterGripper.xDrive = rightOuterDrive;
@@ -106,8 +106,8 @@ public class TrajectoryPlanner : MonoBehaviour
         var leftOuterDrive = m_LeftOuterGripper.xDrive;
         var rightOuterDrive = m_RightOuterGripper.xDrive;
 
-        leftOuterDrive.target = Mathf.Clamp(30.0f, leftOuterDrive.lowerLimit, leftOuterDrive.upperLimit);
-        rightOuterDrive.target = Mathf.Clamp(30.0f, rightOuterDrive.lowerLimit, rightOuterDrive.upperLimit);
+        leftOuterDrive.target = Mathf.Clamp(0.0f, leftOuterDrive.lowerLimit, leftOuterDrive.upperLimit);
+        rightOuterDrive.target = Mathf.Clamp(0.0f, rightOuterDrive.lowerLimit, rightOuterDrive.upperLimit);
 
         m_LeftOuterGripper.xDrive = leftOuterDrive;
         m_RightOuterGripper.xDrive = rightOuterDrive;
