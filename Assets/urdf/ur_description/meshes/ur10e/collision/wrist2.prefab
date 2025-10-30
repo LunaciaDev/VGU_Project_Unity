@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5784632013069502428
+--- !u!1 &19821373412650868
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4970614305041514644}
-  - component: {fileID: 1618636308606966416}
-  - component: {fileID: 1021537004353185295}
+  - component: {fileID: 5355016397914778649}
+  - component: {fileID: 519098021172177019}
+  - component: {fileID: 3402200706309460127}
   m_Layer: 0
   m_Name: wrist2_0
   m_TagString: Untagged
@@ -18,36 +18,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4970614305041514644
+--- !u!4 &5355016397914778649
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5784632013069502428}
+  m_GameObject: {fileID: 19821373412650868}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 550727905721707214}
+  m_Father: {fileID: 2161393185123774095}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &1618636308606966416
+--- !u!33 &519098021172177019
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5784632013069502428}
+  m_GameObject: {fileID: 19821373412650868}
   m_Mesh: {fileID: 4300000, guid: c6eb8e04bf439788aa83625123d420cb, type: 2}
---- !u!23 &1021537004353185295
+--- !u!23 &3402200706309460127
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5784632013069502428}
+  m_GameObject: {fileID: 19821373412650868}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -83,7 +83,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &8587363949371268411
+--- !u!1 &6414338902349568904
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,7 +91,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 550727905721707214}
+  - component: {fileID: 2161393185123774095}
   m_Layer: 0
   m_Name: wrist2
   m_TagString: Untagged
@@ -99,19 +99,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &550727905721707214
+--- !u!4 &2161393185123774095
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8587363949371268411}
+  m_GameObject: {fileID: 6414338902349568904}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4970614305041514644}
+  - {fileID: 5355016397914778649}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
