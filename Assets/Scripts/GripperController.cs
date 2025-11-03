@@ -2,12 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GripperTest : MonoBehaviour
-{
-    [SerializeField]
-    GameObject m_Ur10e;
-    public GameObject Ur10e { get => m_Ur10e; set => m_Ur10e = value; }
-
+public class GripperController {
     ArticulationBody m_LeftOuterGripper;
     ArticulationBody m_LeftInnerGripper;
     ArticulationBody m_LeftFinger;
@@ -23,6 +18,16 @@ public class GripperTest : MonoBehaviour
         "/arm_wrist_2_link",
         "/arm_wrist_3_link"
     };
+
+    const float neutral_angle = 0.0f;
+    const float open_angle = -10.0f;
+    const float close_angle = 17.0f;
+
+    public enum GripperStatus {
+        Neutral,
+        Open,
+        Closed
+    }
 
     void SetGripperPosition(float position) {
         ArticulationDrive drive = m_LeftInnerGripper.xDrive;
@@ -50,21 +55,26 @@ public class GripperTest : MonoBehaviour
         m_RightFinger.xDrive = drive;
     }
 
+    public void SetGripperStatus(GripperStatus status) {
+        switch (status) {
+            case GripperStatus.Neutral: {
+                SetGripperPosition(neutral_angle);
+                break;
+            }
 
-    IEnumerator executor() {
-        //yield return new WaitForSeconds(2);
-        // open_gripper
-        //SetGripperPosition(-10.0f);
-        //yield return new WaitForSeconds(4);
-        // close_gripper
-        SetGripperPosition(17.0f);
-        yield return new WaitForSeconds(4);
-        // neutral_gripper
-        SetGripperPosition(0.0f);
+            case GripperStatus.Open: {
+                SetGripperPosition(open_angle);
+                break;
+            }
+
+            case GripperStatus.Closed: {
+                SetGripperPosition(close_angle);
+                break;
+            }
+        }
     }
 
-    // Start is called before the first frame update
-    void Start() {
+    public GripperController(GameObject m_Ur10e) {
         var link_name = string.Empty;
 
         for (var i = 0; i < 6; i++) {
@@ -85,7 +95,5 @@ public class GripperTest : MonoBehaviour
         m_RightOuterGripper = m_Ur10e.transform.Find(right_outer_gripper).GetComponent<ArticulationBody>();
         m_RightInnerGripper = m_Ur10e.transform.Find(right_inner_gripper).GetComponent<ArticulationBody>();
         m_RightFinger = m_Ur10e.transform.Find(right_finger).GetComponent<ArticulationBody>();
-
-        StartCoroutine(executor());
     }
 }

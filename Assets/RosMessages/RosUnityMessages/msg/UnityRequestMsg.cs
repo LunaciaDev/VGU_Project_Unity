@@ -5,35 +5,35 @@ using System.Collections.Generic;
 using System.Text;
 using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 
-namespace RosMessageTypes.RosUnityIntegration
+namespace RosMessageTypes.RosUnityMessages
 {
     [Serializable]
-    public class Ur10eJointsMsg : Message
+    public class UnityRequestMsg : Message
     {
-        public const string k_RosMessageName = "ros_unity_integration/Ur10eJoints";
+        public const string k_RosMessageName = "ros_unity_messages/UnityRequest";
         public override string RosMessageName => k_RosMessageName;
 
         public double[] joints;
         public Geometry.PoseMsg pick_pose;
         public Geometry.PoseMsg place_pose;
 
-        public Ur10eJointsMsg()
+        public UnityRequestMsg()
         {
             this.joints = new double[6];
             this.pick_pose = new Geometry.PoseMsg();
             this.place_pose = new Geometry.PoseMsg();
         }
 
-        public Ur10eJointsMsg(double[] joints, Geometry.PoseMsg pick_pose, Geometry.PoseMsg place_pose)
+        public UnityRequestMsg(double[] joints, Geometry.PoseMsg pick_pose, Geometry.PoseMsg place_pose)
         {
             this.joints = joints;
             this.pick_pose = pick_pose;
             this.place_pose = place_pose;
         }
 
-        public static Ur10eJointsMsg Deserialize(MessageDeserializer deserializer) => new Ur10eJointsMsg(deserializer);
+        public static UnityRequestMsg Deserialize(MessageDeserializer deserializer) => new UnityRequestMsg(deserializer);
 
-        private Ur10eJointsMsg(MessageDeserializer deserializer)
+        private UnityRequestMsg(MessageDeserializer deserializer)
         {
             deserializer.Read(out this.joints, sizeof(double), 6);
             this.pick_pose = Geometry.PoseMsg.Deserialize(deserializer);
@@ -49,7 +49,7 @@ namespace RosMessageTypes.RosUnityIntegration
 
         public override string ToString()
         {
-            return "Ur10eJointsMsg: " +
+            return "UnityRequestMsg: " +
             "\njoints: " + System.String.Join(", ", joints.ToList()) +
             "\npick_pose: " + pick_pose.ToString() +
             "\nplace_pose: " + place_pose.ToString();

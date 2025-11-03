@@ -5,29 +5,29 @@ using System.Collections.Generic;
 using System.Text;
 using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 
-namespace RosMessageTypes.RosUnityIntegration
+namespace RosMessageTypes.RosUnityMessages
 {
     [Serializable]
-    public class Ur10eTrajectoriesMsg : Message
+    public class TrajectoryMessageMsg : Message
     {
-        public const string k_RosMessageName = "ros_unity_integration/Ur10eTrajectories";
+        public const string k_RosMessageName = "ros_unity_messages/TrajectoryMessage";
         public override string RosMessageName => k_RosMessageName;
 
         public Moveit.RobotTrajectoryMsg[] trajectory;
 
-        public Ur10eTrajectoriesMsg()
+        public TrajectoryMessageMsg()
         {
             this.trajectory = new Moveit.RobotTrajectoryMsg[0];
         }
 
-        public Ur10eTrajectoriesMsg(Moveit.RobotTrajectoryMsg[] trajectory)
+        public TrajectoryMessageMsg(Moveit.RobotTrajectoryMsg[] trajectory)
         {
             this.trajectory = trajectory;
         }
 
-        public static Ur10eTrajectoriesMsg Deserialize(MessageDeserializer deserializer) => new Ur10eTrajectoriesMsg(deserializer);
+        public static TrajectoryMessageMsg Deserialize(MessageDeserializer deserializer) => new TrajectoryMessageMsg(deserializer);
 
-        private Ur10eTrajectoriesMsg(MessageDeserializer deserializer)
+        private TrajectoryMessageMsg(MessageDeserializer deserializer)
         {
             deserializer.Read(out this.trajectory, Moveit.RobotTrajectoryMsg.Deserialize, deserializer.ReadLength());
         }
@@ -40,7 +40,7 @@ namespace RosMessageTypes.RosUnityIntegration
 
         public override string ToString()
         {
-            return "Ur10eTrajectoriesMsg: " +
+            return "TrajectoryMessageMsg: " +
             "\ntrajectory: " + System.String.Join(", ", trajectory.ToList());
         }
 
