@@ -19,17 +19,10 @@ public class GripperController {
         "/arm_wrist_3_link"
     };
 
-    const float neutral_angle = 0.0f;
-    const float open_angle = -10.0f;
-    const float close_angle = 17.0f;
-
-    public enum GripperStatus {
-        Neutral,
-        Open,
-        Closed
-    }
-
-    void SetGripperPosition(float position) {
+    /**
+    * Given the position of the gripper_finger_joint, set the position of the corresponding gripper joint.
+    */
+    public void SetGripperPosition(float position) {
         ArticulationDrive drive = m_LeftInnerGripper.xDrive;
         drive.target = -position;
         m_LeftInnerGripper.xDrive = drive;
@@ -53,25 +46,6 @@ public class GripperController {
         drive = m_RightFinger.xDrive;
         drive.target = position;
         m_RightFinger.xDrive = drive;
-    }
-
-    public void SetGripperStatus(GripperStatus status) {
-        switch (status) {
-            case GripperStatus.Neutral: {
-                SetGripperPosition(neutral_angle);
-                break;
-            }
-
-            case GripperStatus.Open: {
-                SetGripperPosition(open_angle);
-                break;
-            }
-
-            case GripperStatus.Closed: {
-                SetGripperPosition(close_angle);
-                break;
-            }
-        }
     }
 
     public GripperController(GameObject m_Ur10e) {
