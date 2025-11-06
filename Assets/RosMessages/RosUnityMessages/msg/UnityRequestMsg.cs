@@ -16,19 +16,22 @@ namespace RosMessageTypes.RosUnityMessages
         public double[] joints;
         public Geometry.PoseMsg pick_pose;
         public Geometry.PoseMsg place_pose;
+        public UnityObjectMsg[] static_objects;
 
         public UnityRequestMsg()
         {
             this.joints = new double[6];
             this.pick_pose = new Geometry.PoseMsg();
             this.place_pose = new Geometry.PoseMsg();
+            this.static_objects = new UnityObjectMsg[0];
         }
 
-        public UnityRequestMsg(double[] joints, Geometry.PoseMsg pick_pose, Geometry.PoseMsg place_pose)
+        public UnityRequestMsg(double[] joints, Geometry.PoseMsg pick_pose, Geometry.PoseMsg place_pose, UnityObjectMsg[] static_objects)
         {
             this.joints = joints;
             this.pick_pose = pick_pose;
             this.place_pose = place_pose;
+            this.static_objects = static_objects;
         }
 
         public static UnityRequestMsg Deserialize(MessageDeserializer deserializer) => new UnityRequestMsg(deserializer);
@@ -38,6 +41,7 @@ namespace RosMessageTypes.RosUnityMessages
             deserializer.Read(out this.joints, sizeof(double), 6);
             this.pick_pose = Geometry.PoseMsg.Deserialize(deserializer);
             this.place_pose = Geometry.PoseMsg.Deserialize(deserializer);
+            deserializer.Read(out this.static_objects, UnityObjectMsg.Deserialize, deserializer.ReadLength());
         }
 
         public override void SerializeTo(MessageSerializer serializer)
@@ -45,6 +49,8 @@ namespace RosMessageTypes.RosUnityMessages
             serializer.Write(this.joints);
             serializer.Write(this.pick_pose);
             serializer.Write(this.place_pose);
+            serializer.WriteLength(this.static_objects);
+            serializer.Write(this.static_objects);
         }
 
         public override string ToString()
@@ -52,7 +58,8 @@ namespace RosMessageTypes.RosUnityMessages
             return "UnityRequestMsg: " +
             "\njoints: " + System.String.Join(", ", joints.ToList()) +
             "\npick_pose: " + pick_pose.ToString() +
-            "\nplace_pose: " + place_pose.ToString();
+            "\nplace_pose: " + place_pose.ToString() +
+            "\nstatic_objects: " + System.String.Join(", ", static_objects.ToList());
         }
 
 #if UNITY_EDITOR

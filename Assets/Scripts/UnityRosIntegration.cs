@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using RosMessageTypes.Geometry;
 using RosMessageTypes.Sensor;
+using RosMessageTypes.Std;
 using RosMessageTypes.RosUnityMessages;
 using Unity.Robotics.ROSTCPConnector;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
@@ -36,13 +37,9 @@ public class UnityRosIntegration : MonoBehaviour
     [SerializeField]
     string m_JointStateRosTopicName = "/joint_states";
     public string JointStateRosTopicName { get => m_JointStateRosTopicName; set => m_JointStateRosTopicName = value; }
-    [SerializeField]
-    string m_WorkspaceObjectRosTopicName = "/unity_bridge/unity_objects";
-    public string WorkspaceObjectRosTopicName { get => m_WorkspaceObjectRosTopicName; set => m_WorkspaceObjectRosTopicName = value;}
 
-    // Assures that the gripper is always positioned above the m_Target cube before grasping.
-    readonly Quaternion m_PickOrientation = Quaternion.Euler(90, 90, 0);
-    readonly Vector3 m_PickPoseOffset = Vector3.up * 0.1f;
+    // 20cm away from the cube before lowering
+    readonly Vector3 m_Offset = Vector3.up * 0.2f;
 
     // Robot Articulation Body
     ArticulationBody[] m_JointArticulationBodies;
@@ -52,6 +49,8 @@ public class UnityRosIntegration : MonoBehaviour
 
     // Gripper Controller
     GripperController m_GripperController;
+
+    // Collision Objects
 
     // Start is called before the first frame update
     void Start()
@@ -78,9 +77,6 @@ public class UnityRosIntegration : MonoBehaviour
 
         // Register to ROS that we are receiving joint state message from this topic
         m_Ros.Subscribe<JointStateMsg>(m_JointStateRosTopicName, JointStateCallback);
-
-        // Register to ROS that we are publishing scene collision object information to this topic
-        // [TODO]
     }
 
     /**
@@ -95,17 +91,32 @@ public class UnityRosIntegration : MonoBehaviour
 
         // Pick Pose
         message.pick_pose = new PoseMsg {
-            position = (m_Target.transform.position + m_PickPoseOffset).To<FLU>(),
-            // The hardcoded x/z angles assure that the gripper is always positioned above the target cube before grasping.
-            orientation = Quaternion.Euler(90, m_Target.transform.eulerAngles.y, 0).To<FLU>()
+            position = (m_Target.transform.position + m_Offset).To<FLU>(),
+            orientation = Quaternion.Euler(0, 0, 180).To<FLU>()
         };
 
         // Place Pose
         message.place_pose = new PoseMsg {
-            position = (m_TargetPlacement.transform.position + m_PickPoseOffset).To<FLU>(),
-            orientation = m_PickOrientation.To<FLU>()
+            position = (m_TargetPlacement.transform.position + m_Offset).To<FLU>(),
+            orientation = Quaternion.Euler(0, 0, 180).To<FLU>()
         };
 
+        // Add static objects
+        var sceneObjects = GameObject.FindGameObjectsWithTag("StaticSceneObject");
+        var encodedObjects = new UnityObjectMsg[sceneObjects.Length];
+        var index = 0;
+
+        foreach (GameObject sceneObject in sceneObjects) {
+            encodedObjects[index] = new UnityObjectMsg {
+                id = new StringMsg(sceneObject.name),
+                position = sceneObject.transform.position.To<FLU>(),
+                orientation = Quaternion.Euler(sceneObject.transform.eulerAngles.x, sceneObject.transform.eulerAngles.y, sceneObject.transform.eulerAngles.z).To<FLU>(),
+                scale = sceneObject.transform.localScale.To<FLU>()
+            };
+            index += 1;
+        }
+
+        message.static_objects = encodedObjects;
         m_Ros.Publish(m_TargetsRosTopicName, message);
     }
 
