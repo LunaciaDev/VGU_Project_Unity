@@ -26,11 +26,17 @@ public class UnityRosIntegration : MonoBehaviour
     GameObject m_Ur10e;
     public GameObject Ur10e { get => m_Ur10e; set => m_Ur10e = value; }
     [SerializeField]
-    GameObject m_Target;
-    public GameObject Target { get => m_Target; set => m_Target = value; }
+    GameObject m_PickLocation;
+    public GameObject PickLocation { get => m_PickLocation; set => m_PickLocation = value; }
     [SerializeField]
-    GameObject m_TargetPlacement;
-    public GameObject TargetPlacement { get => m_TargetPlacement; set => m_TargetPlacement = value; }
+    GameObject m_PlaceLocation;
+    public GameObject PlaceLocation { get => m_PlaceLocation; set => m_PlaceLocation = value; }
+    [SerializeField]
+    GameObject m_PrePickLocation;
+    public GameObject PrePickLocation { get => m_PrePickLocation; set => m_PrePickLocation = value; }
+    [SerializeField]
+    GameObject m_PrePlaceLocation;
+    public GameObject PrePlaceLocation { get => m_PrePlaceLocation; set => m_PrePlaceLocation = value; }
     [SerializeField]
     string m_TargetsRosTopicName = "/unity_bridge/unity_targets";
     public string TargetsRosTopicName { get => m_TargetsRosTopicName; set => m_TargetsRosTopicName = value; }
@@ -85,20 +91,28 @@ public class UnityRosIntegration : MonoBehaviour
     public void PublishTarget() {
         var message = new UnityRequestMsg();
 
-        for (var i = 0; i < k_NumRobotJoints; i++) {
-            message.joints[i] = m_JointArticulationBodies[i].jointPosition[0];
-        }
-
-        // Pick Pose
-        message.pick_pose = new PoseMsg {
-            position = (m_Target.transform.position + m_Offset).To<FLU>(),
-            orientation = Quaternion.Euler(0, 0, 180).To<FLU>()
+        // Pre Pick Location
+        message.pre_pick_location = new PoseMsg {
+            position = m_PrePickLocation.transform.position.To<FLU>(),
+            orientation = m_PrePickLocation.transform.rotation.To<FLU>()
         };
 
-        // Place Pose
-        message.place_pose = new PoseMsg {
-            position = (m_TargetPlacement.transform.position + m_Offset).To<FLU>(),
-            orientation = Quaternion.Euler(0, 0, 180).To<FLU>()
+        // Pick Location
+        message.pick_location = new PoseMsg {
+            position = m_PickLocation.transform.position.To<FLU>(),
+            orientation = m_PrePickLocation.transform.rotation.To<FLU>()
+        };
+
+        // Pre Place Location
+        message.pre_place_location = new PoseMsg {
+            position = m_PrePlaceLocation.transform.position.To<FLU>(),
+            orientation = m_PrePlaceLocation.transform.rotation.To<FLU>()
+        };
+
+        // Place Location
+        message.place_location = new PoseMsg {
+            position = m_PlaceLocation.transform.position.To<FLU>(),
+            orientation = m_PrePlaceLocation.transform.rotation.To<FLU>()
         };
 
         // Add static objects
@@ -110,7 +124,7 @@ public class UnityRosIntegration : MonoBehaviour
             encodedObjects[index] = new UnityObjectMsg {
                 id = new StringMsg(sceneObject.name),
                 position = sceneObject.transform.position.To<FLU>(),
-                orientation = Quaternion.Euler(sceneObject.transform.eulerAngles.x, sceneObject.transform.eulerAngles.y, sceneObject.transform.eulerAngles.z).To<FLU>(),
+                orientation = sceneObject.transform.rotation.To<FLU>(),
                 scale = sceneObject.transform.localScale.To<FLU>()
             };
             index += 1;

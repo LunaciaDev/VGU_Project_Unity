@@ -13,24 +13,27 @@ namespace RosMessageTypes.RosUnityMessages
         public const string k_RosMessageName = "ros_unity_messages/UnityRequest";
         public override string RosMessageName => k_RosMessageName;
 
-        public double[] joints;
-        public Geometry.PoseMsg pick_pose;
-        public Geometry.PoseMsg place_pose;
+        public Geometry.PoseMsg pre_pick_location;
+        public Geometry.PoseMsg pre_place_location;
+        public Geometry.PoseMsg pick_location;
+        public Geometry.PoseMsg place_location;
         public UnityObjectMsg[] static_objects;
 
         public UnityRequestMsg()
         {
-            this.joints = new double[6];
-            this.pick_pose = new Geometry.PoseMsg();
-            this.place_pose = new Geometry.PoseMsg();
+            this.pre_pick_location = new Geometry.PoseMsg();
+            this.pre_place_location = new Geometry.PoseMsg();
+            this.pick_location = new Geometry.PoseMsg();
+            this.place_location = new Geometry.PoseMsg();
             this.static_objects = new UnityObjectMsg[0];
         }
 
-        public UnityRequestMsg(double[] joints, Geometry.PoseMsg pick_pose, Geometry.PoseMsg place_pose, UnityObjectMsg[] static_objects)
+        public UnityRequestMsg(Geometry.PoseMsg pre_pick_location, Geometry.PoseMsg pre_place_location, Geometry.PoseMsg pick_location, Geometry.PoseMsg place_location, UnityObjectMsg[] static_objects)
         {
-            this.joints = joints;
-            this.pick_pose = pick_pose;
-            this.place_pose = place_pose;
+            this.pre_pick_location = pre_pick_location;
+            this.pre_place_location = pre_place_location;
+            this.pick_location = pick_location;
+            this.place_location = place_location;
             this.static_objects = static_objects;
         }
 
@@ -38,17 +41,19 @@ namespace RosMessageTypes.RosUnityMessages
 
         private UnityRequestMsg(MessageDeserializer deserializer)
         {
-            deserializer.Read(out this.joints, sizeof(double), 6);
-            this.pick_pose = Geometry.PoseMsg.Deserialize(deserializer);
-            this.place_pose = Geometry.PoseMsg.Deserialize(deserializer);
+            this.pre_pick_location = Geometry.PoseMsg.Deserialize(deserializer);
+            this.pre_place_location = Geometry.PoseMsg.Deserialize(deserializer);
+            this.pick_location = Geometry.PoseMsg.Deserialize(deserializer);
+            this.place_location = Geometry.PoseMsg.Deserialize(deserializer);
             deserializer.Read(out this.static_objects, UnityObjectMsg.Deserialize, deserializer.ReadLength());
         }
 
         public override void SerializeTo(MessageSerializer serializer)
         {
-            serializer.Write(this.joints);
-            serializer.Write(this.pick_pose);
-            serializer.Write(this.place_pose);
+            serializer.Write(this.pre_pick_location);
+            serializer.Write(this.pre_place_location);
+            serializer.Write(this.pick_location);
+            serializer.Write(this.place_location);
             serializer.WriteLength(this.static_objects);
             serializer.Write(this.static_objects);
         }
@@ -56,9 +61,10 @@ namespace RosMessageTypes.RosUnityMessages
         public override string ToString()
         {
             return "UnityRequestMsg: " +
-            "\njoints: " + System.String.Join(", ", joints.ToList()) +
-            "\npick_pose: " + pick_pose.ToString() +
-            "\nplace_pose: " + place_pose.ToString() +
+            "\npre_pick_location: " + pre_pick_location.ToString() +
+            "\npre_place_location: " + pre_place_location.ToString() +
+            "\npick_location: " + pick_location.ToString() +
+            "\nplace_location: " + place_location.ToString() +
             "\nstatic_objects: " + System.String.Join(", ", static_objects.ToList());
         }
 
