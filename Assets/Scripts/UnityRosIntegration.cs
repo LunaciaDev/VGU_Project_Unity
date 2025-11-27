@@ -8,6 +8,7 @@ using RosMessageTypes.RosUnityMessages;
 using Unity.Robotics.ROSTCPConnector;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UnityRosIntegration : MonoBehaviour
 {
@@ -90,6 +91,9 @@ public class UnityRosIntegration : MonoBehaviour
     */
     public void PublishTarget() {
         var message = new UnityRequestMsg();
+
+        // Scene name
+        message.scene_name = new StringMsg(SceneManager.GetActiveScene().name);
 
         // Pre Pick Location
         message.pre_pick_location = new PoseMsg {

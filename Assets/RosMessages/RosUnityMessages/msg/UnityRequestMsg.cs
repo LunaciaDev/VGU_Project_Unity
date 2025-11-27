@@ -13,6 +13,7 @@ namespace RosMessageTypes.RosUnityMessages
         public const string k_RosMessageName = "ros_unity_messages/UnityRequest";
         public override string RosMessageName => k_RosMessageName;
 
+        public Std.StringMsg scene_name;
         public Geometry.PoseMsg pre_pick_location;
         public Geometry.PoseMsg pre_place_location;
         public Geometry.PoseMsg pick_location;
@@ -21,6 +22,7 @@ namespace RosMessageTypes.RosUnityMessages
 
         public UnityRequestMsg()
         {
+            this.scene_name = new Std.StringMsg();
             this.pre_pick_location = new Geometry.PoseMsg();
             this.pre_place_location = new Geometry.PoseMsg();
             this.pick_location = new Geometry.PoseMsg();
@@ -28,8 +30,9 @@ namespace RosMessageTypes.RosUnityMessages
             this.static_objects = new UnityObjectMsg[0];
         }
 
-        public UnityRequestMsg(Geometry.PoseMsg pre_pick_location, Geometry.PoseMsg pre_place_location, Geometry.PoseMsg pick_location, Geometry.PoseMsg place_location, UnityObjectMsg[] static_objects)
+        public UnityRequestMsg(Std.StringMsg scene_name, Geometry.PoseMsg pre_pick_location, Geometry.PoseMsg pre_place_location, Geometry.PoseMsg pick_location, Geometry.PoseMsg place_location, UnityObjectMsg[] static_objects)
         {
+            this.scene_name = scene_name;
             this.pre_pick_location = pre_pick_location;
             this.pre_place_location = pre_place_location;
             this.pick_location = pick_location;
@@ -41,6 +44,7 @@ namespace RosMessageTypes.RosUnityMessages
 
         private UnityRequestMsg(MessageDeserializer deserializer)
         {
+            this.scene_name = Std.StringMsg.Deserialize(deserializer);
             this.pre_pick_location = Geometry.PoseMsg.Deserialize(deserializer);
             this.pre_place_location = Geometry.PoseMsg.Deserialize(deserializer);
             this.pick_location = Geometry.PoseMsg.Deserialize(deserializer);
@@ -50,6 +54,7 @@ namespace RosMessageTypes.RosUnityMessages
 
         public override void SerializeTo(MessageSerializer serializer)
         {
+            serializer.Write(this.scene_name);
             serializer.Write(this.pre_pick_location);
             serializer.Write(this.pre_place_location);
             serializer.Write(this.pick_location);
@@ -61,6 +66,7 @@ namespace RosMessageTypes.RosUnityMessages
         public override string ToString()
         {
             return "UnityRequestMsg: " +
+            "\nscene_name: " + scene_name.ToString() +
             "\npre_pick_location: " + pre_pick_location.ToString() +
             "\npre_place_location: " + pre_place_location.ToString() +
             "\npick_location: " + pick_location.ToString() +
