@@ -44,9 +44,9 @@ public class UnityRosIntegration : MonoBehaviour
     [SerializeField]
     string m_JointStateRosTopicName = "/joint_states";
     public string JointStateRosTopicName { get => m_JointStateRosTopicName; set => m_JointStateRosTopicName = value; }
-
-    // 20cm away from the cube before lowering
-    readonly Vector3 m_Offset = Vector3.up * 0.2f;
+    [SerializeField]
+    string m_GripperControlRosTopicName = "/unity_bridge/gripper_control";
+    public string GripperControlRosTopicName { get => m_GripperControlRosTopicName; set => m_GripperControlRosTopicName = value; }
 
     // Robot Articulation Body
     ArticulationBody[] m_JointArticulationBodies;
@@ -84,6 +84,9 @@ public class UnityRosIntegration : MonoBehaviour
 
         // Register to ROS that we are receiving joint state message from this topic
         m_Ros.Subscribe<JointStateMsg>(m_JointStateRosTopicName, JointStateCallback);
+
+        // Register to ROS that we are receiving gripper control message from this topic
+        m_Ros.Subscribe<GripperControlMsg>(m_GripperControlRosTopicName, GripperControlCallback);
     }
 
     /**
@@ -195,14 +198,17 @@ public class UnityRosIntegration : MonoBehaviour
                     SetArmJoint(5, jointPositions[jointIndex]);
                     break;
                 }
-                case "gripper_finger_joint": {
-                    // Control the gripper, call the corresponding controller
-                    m_GripperController.SetGripperPosition(jointPositions[jointIndex]);
+                default: {
+                    // Gripper might still be published, ignore it
                     break;
                 }
             }
         }
 
         // Frankly speaking at 100Hz update rate, we dont want to wait here..?
+    }
+
+    void GripperControlCallback(GripperControlMsg gripper_control_msg) {
+        m_GripperController.SetGripperPosition((float)gripper_control_msg.gripper_angle * Mathf.Rad2Deg);
     }
 }
