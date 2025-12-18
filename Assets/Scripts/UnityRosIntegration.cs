@@ -47,6 +47,16 @@ public class UnityRosIntegration : MonoBehaviour
     [SerializeField]
     string m_GripperControlRosTopicName = "/unity_bridge/gripper_control";
     public string GripperControlRosTopicName { get => m_GripperControlRosTopicName; set => m_GripperControlRosTopicName = value; }
+    [SerializeField]
+    string m_DynObjectSyncRosTopicName = "/unity_bridge/sync_dyn_objects";
+    public string DynObjectSyncRosTopicName { get => m_DynObjectSyncRosTopicName; set => m_DynObjectSyncRosTopicName = value; }
+    [SerializeField]
+    string m_DynObjectsRosTopicName = "/unity_bridge/dynamic_objects";
+    public string DynObjectsRosTopicName { get => m_DynObjectsRosTopicName; set => m_DynObjectsRosTopicName = value; }
+    
+    // Do we send DynObjects location?
+    bool sendDynObjects;
+    int updateCount;
 
     // Robot Articulation Body
     ArticulationBody[] m_JointArticulationBodies;
@@ -56,8 +66,6 @@ public class UnityRosIntegration : MonoBehaviour
 
     // Gripper Controller
     GripperController m_GripperController;
-
-    // Collision Objects
 
     // Start is called before the first frame update
     void Start()
@@ -79,14 +87,56 @@ public class UnityRosIntegration : MonoBehaviour
         // Get ROS connection static instance
         m_Ros = ROSConnection.GetOrCreateInstance();
 
-        // Register to ROS that we are publishing target data to this topic
+        // Target and Static Object Data
         m_Ros.RegisterPublisher<UnityRequestMsg>(m_TargetsRosTopicName);
+        
+        m_Ros.RegisterPublisher<UnityDynamicObjectsMsg>(m_DynObjectsRosTopicName);
 
-        // Register to ROS that we are receiving joint state message from this topic
+        // Joint State Listener
         m_Ros.Subscribe<JointStateMsg>(m_JointStateRosTopicName, JointStateCallback);
 
-        // Register to ROS that we are receiving gripper control message from this topic
+        // Gripper State Listener
         m_Ros.Subscribe<GripperControlMsg>(m_GripperControlRosTopicName, GripperControlCallback);
+        
+        // Dynamic Object Send Control
+        m_Ros.Subscribe<EmptyMsg>(m_DynObjectSyncRosTopicName, SyncControlCallback);
+        sendDynObjects = false;
+        updateCount = 1;
+    }
+    
+    void FixedUpdate() {
+        if (!sendDynObjects) {
+            return;
+        }
+    
+        if (updateCount % 5 == 0) {
+            // 50Hz base clock, divided by 5 -> 10Hz update rate
+            updateCount = 0;
+            
+            var dynObjects = GameObject.FindGameObjectsWithTag("DynamicSceneObject");
+            var encodedObjects = new UnityObjectMsg[dynObjects.Length];
+            var index = 0;
+            
+            foreach (GameObject sceneObject in dynObjects) {
+                encodedObjects[index] = new UnityObjectMsg {
+                    id = new StringMsg(sceneObject.name),
+                    position = sceneObject.transform.position.To<FLU>(),
+                    orientation = sceneObject.transform.rotation.To<FLU>(),
+                    scale = sceneObject.transform.localScale.To<FLU>()
+                };
+                index += 1;
+	        }
+	        
+	        var message = new UnityDynamicObjectsMsg(encodedObjects);
+	        m_Ros.Publish(m_DynObjectsRosTopicName, message);        
+        }
+         
+        updateCount += 1;
+    }
+    
+    void SyncControlCallback(EmptyMsg message) {
+        sendDynObjects = !sendDynObjects;
+        Debug.Log(sendDynObjects);
     }
 
     /**
@@ -124,7 +174,8 @@ public class UnityRosIntegration : MonoBehaviour
 
         // Add static objects
         var sceneObjects = GameObject.FindGameObjectsWithTag("StaticSceneObject");
-        var encodedObjects = new UnityObjectMsg[sceneObjects.Length];
+        var dynObjects = GameObject.FindGameObjectsWithTag("DynamicSceneObject");
+        var encodedObjects = new UnityObjectMsg[sceneObjects.Length + dynObjects.Length];
         var index = 0;
 
         foreach (GameObject sceneObject in sceneObjects) {
@@ -136,8 +187,18 @@ public class UnityRosIntegration : MonoBehaviour
             };
             index += 1;
         }
+        
+        foreach (GameObject sceneObject in dynObjects) {
+            encodedObjects[index] = new UnityObjectMsg {
+                id = new StringMsg(sceneObject.name),
+                position = sceneObject.transform.position.To<FLU>(),
+                orientation = sceneObject.transform.rotation.To<FLU>(),
+                scale = sceneObject.transform.localScale.To<FLU>()
+            };
+            index += 1;
+	    }
 
-        message.static_objects = encodedObjects;
+        message.initial_objects = encodedObjects;
         m_Ros.Publish(m_TargetsRosTopicName, message);
     }
 

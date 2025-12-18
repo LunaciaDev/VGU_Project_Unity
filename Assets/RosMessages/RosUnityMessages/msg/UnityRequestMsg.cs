@@ -18,7 +18,7 @@ namespace RosMessageTypes.RosUnityMessages
         public Geometry.PoseMsg pre_place_location;
         public Geometry.PoseMsg pick_location;
         public Geometry.PoseMsg place_location;
-        public UnityObjectMsg[] static_objects;
+        public UnityObjectMsg[] initial_objects;
 
         public UnityRequestMsg()
         {
@@ -27,17 +27,17 @@ namespace RosMessageTypes.RosUnityMessages
             this.pre_place_location = new Geometry.PoseMsg();
             this.pick_location = new Geometry.PoseMsg();
             this.place_location = new Geometry.PoseMsg();
-            this.static_objects = new UnityObjectMsg[0];
+            this.initial_objects = new UnityObjectMsg[0];
         }
 
-        public UnityRequestMsg(Std.StringMsg scene_name, Geometry.PoseMsg pre_pick_location, Geometry.PoseMsg pre_place_location, Geometry.PoseMsg pick_location, Geometry.PoseMsg place_location, UnityObjectMsg[] static_objects)
+        public UnityRequestMsg(Std.StringMsg scene_name, Geometry.PoseMsg pre_pick_location, Geometry.PoseMsg pre_place_location, Geometry.PoseMsg pick_location, Geometry.PoseMsg place_location, UnityObjectMsg[] initial_objects)
         {
             this.scene_name = scene_name;
             this.pre_pick_location = pre_pick_location;
             this.pre_place_location = pre_place_location;
             this.pick_location = pick_location;
             this.place_location = place_location;
-            this.static_objects = static_objects;
+            this.initial_objects = initial_objects;
         }
 
         public static UnityRequestMsg Deserialize(MessageDeserializer deserializer) => new UnityRequestMsg(deserializer);
@@ -49,7 +49,7 @@ namespace RosMessageTypes.RosUnityMessages
             this.pre_place_location = Geometry.PoseMsg.Deserialize(deserializer);
             this.pick_location = Geometry.PoseMsg.Deserialize(deserializer);
             this.place_location = Geometry.PoseMsg.Deserialize(deserializer);
-            deserializer.Read(out this.static_objects, UnityObjectMsg.Deserialize, deserializer.ReadLength());
+            deserializer.Read(out this.initial_objects, UnityObjectMsg.Deserialize, deserializer.ReadLength());
         }
 
         public override void SerializeTo(MessageSerializer serializer)
@@ -59,8 +59,8 @@ namespace RosMessageTypes.RosUnityMessages
             serializer.Write(this.pre_place_location);
             serializer.Write(this.pick_location);
             serializer.Write(this.place_location);
-            serializer.WriteLength(this.static_objects);
-            serializer.Write(this.static_objects);
+            serializer.WriteLength(this.initial_objects);
+            serializer.Write(this.initial_objects);
         }
 
         public override string ToString()
@@ -71,7 +71,7 @@ namespace RosMessageTypes.RosUnityMessages
             "\npre_place_location: " + pre_place_location.ToString() +
             "\npick_location: " + pick_location.ToString() +
             "\nplace_location: " + place_location.ToString() +
-            "\nstatic_objects: " + System.String.Join(", ", static_objects.ToList());
+            "\ninitial_objects: " + System.String.Join(", ", initial_objects.ToList());
         }
 
 #if UNITY_EDITOR
