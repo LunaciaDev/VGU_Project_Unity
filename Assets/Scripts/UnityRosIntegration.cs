@@ -5,6 +5,7 @@ using RosMessageTypes.Geometry;
 using RosMessageTypes.Sensor;
 using RosMessageTypes.Std;
 using RosMessageTypes.RosUnityMessages;
+using RosMessageTypes.RtdeEcho;
 using Unity.Robotics.ROSTCPConnector;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using UnityEngine;
@@ -53,10 +54,16 @@ public class UnityRosIntegration : MonoBehaviour
     [SerializeField]
     string m_DynObjectsRosTopicName = "/unity_bridge/dynamic_objects";
     public string DynObjectsRosTopicName { get => m_DynObjectsRosTopicName; set => m_DynObjectsRosTopicName = value; }
+    [SerializeField]
+    string m_RtdeDataRosTopicName = "/unity_bridge/unity_rtde_data";
+    public string RtdeDataRosTopicName { get => m_DynObjectsRosTopicName; set => m_DynObjectsRosTopicName = value; }
     
     // Do we send DynObjects location?
     bool sendDynObjects;
     int updateCount;
+    
+    double moveEnergy = 0;
+    double brakeEnergy = 0;
 
     // Robot Articulation Body
     ArticulationBody[] m_JointArticulationBodies;
@@ -89,8 +96,8 @@ public class UnityRosIntegration : MonoBehaviour
 
         // Target and Static Object Data
         m_Ros.RegisterPublisher<UnityRequestMsg>(m_TargetsRosTopicName);
-        
         m_Ros.RegisterPublisher<UnityDynamicObjectsMsg>(m_DynObjectsRosTopicName);
+        m_Ros.RegisterPublisher<RtdeDataMsg>(m_RtdeDataRosTopicName);
 
         // Joint State Listener
         m_Ros.Subscribe<JointStateMsg>(m_JointStateRosTopicName, JointStateCallback);
@@ -105,6 +112,21 @@ public class UnityRosIntegration : MonoBehaviour
     }
     
     void FixedUpdate() {
+        foreach (ArticulationBody body in m_JointArticulationBodies) {
+            var work = body.driveForce[0] * body.jointVelocity[0];
+            
+            if (work > 0) {
+                moveEnergy += work * Time.fixedDeltaTime / 3600.0;
+            }
+            else {
+                brakeEnergy += -work * Time.fixedDeltaTime / 3600.0;
+            }
+        }
+        
+        var rtdeData = new RtdeDataMsg(moveEnergy, brakeEnergy);
+        
+        m_Ros.Publish(m_RtdeDataRosTopicName, rtdeData);
+    
         if (!sendDynObjects) {
             return;
         }
@@ -136,7 +158,6 @@ public class UnityRosIntegration : MonoBehaviour
     
     void SyncControlCallback(EmptyMsg message) {
         sendDynObjects = !sendDynObjects;
-        Debug.Log(sendDynObjects);
     }
 
     /**
